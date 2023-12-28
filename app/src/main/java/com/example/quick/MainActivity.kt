@@ -41,7 +41,7 @@ import com.example.quick.screens.Find
 import com.example.quick.screens.Home
 import com.example.quick.screens.Post
 import com.example.quick.screens.Profile
-import com.example.quick.screens.Reels
+import com.example.quick.screens.ReelsPage
 
 import com.example.quick.ui.theme.QuickTheme
 
@@ -96,7 +96,7 @@ fun NavigationHost(navController: NavHostController) {
             Post()
         }
         composable(NavRoutes.Reels.route) {
-            Reels()
+            ReelsPage()
         }
         composable(NavRoutes.Profile.route) {
             Profile()
