@@ -282,32 +282,36 @@ fun ProfileDetails() {
 @Composable
 fun EditShareButtons() {
     Row {
-        Box(
+        RoundedButton(
+            text = "Edit Profile",
             modifier = Modifier
                 .padding(start = 2.dp)
                 .weight(weight = 0.5f, fill = true)
-                .fillMaxSize()
-                .clip(RoundedCornerShape(6.dp))
-                .clickable { }
-                .background(Color.DarkGray),
-            contentAlignment = Alignment.Center
-
-        ) {
-            CenteredText(text = "Edit Profile", fontWeight = FontWeight.Bold, fontSize = 10.sp)
-        }
-        Box(
+        )
+        RoundedButton(
+            text = "Share Profile",
             modifier = Modifier
-                .padding(start = 4.dp)
+                .padding(start = 5.dp)
                 .weight(weight = 0.5f, fill = true)
-                .fillMaxSize()
-                .clip(RoundedCornerShape(6.dp))
-                .clickable { }
-                .background(Color.DarkGray),
-            contentAlignment = Alignment.Center
+        )
+    }
+}
 
-        ) {
-            CenteredText(text = "Share Profile", fontWeight = FontWeight.Bold, fontSize = 10.sp)
-        }
+@Composable
+fun RoundedButton(
+    modifier: Modifier = Modifier,
+    text: String,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(6.dp))
+            .clickable { }
+            .background(Color.DarkGray),
+        contentAlignment = Alignment.Center
+
+    ) {
+        CenteredText(text = text, fontWeight = FontWeight.Bold, fontSize = 10.sp)
     }
 }
 

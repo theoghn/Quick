@@ -82,7 +82,7 @@ fun MainScreen() {
 fun NavigationHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.Home.route,
+        startDestination = NavRoutes.Reels.route,
         enterTransition = {EnterTransition.None},
         exitTransition = {ExitTransition.None}
         ) {
