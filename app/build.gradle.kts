@@ -1,6 +1,10 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
+    id("kotlin-kapt")
+    id("kotlin-android")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -73,6 +77,13 @@ dependencies {
     implementation("androidx.compose.material:material:1.5.4")
 //    layout
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha13")
-
+//    firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth-ktx")
+//    dagger hilt
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-compiler:2.44")
 
 }

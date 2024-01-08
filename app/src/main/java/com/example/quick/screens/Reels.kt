@@ -123,7 +123,7 @@ fun Interactions(){
                     contentDescription = null,
                     Modifier
                         .fillMaxWidth()
-                        .weight(0.2f))
+                        .weight(0.18f))
                 Text(text = (100..10000).random().toString(), textAlign = TextAlign.Center,fontSize = 13.sp,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -132,8 +132,8 @@ fun Interactions(){
                     painter = painterResource(id = R.drawable.ic_comment),
                     contentDescription = null,
                     Modifier
-                        .fillMaxWidth(0.7f)
-                        .weight(0.2f))
+                        .fillMaxWidth(0.6f)
+                        .weight(0.18f))
                 Text(text = (100..1000).random().toString(), textAlign = TextAlign.Center,fontSize = 13.sp,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -142,8 +142,8 @@ fun Interactions(){
                     painter = painterResource(id = R.drawable.ic_send),
                     contentDescription = null,
                     Modifier
-                        .fillMaxWidth(0.7f)
-                        .weight(0.2f))
+                        .fillMaxWidth(0.6f)
+                        .weight(0.18f))
                 Text(text = (100..3000).random().toString(),
                     textAlign = TextAlign.Center,
                     fontSize = 13.sp,
@@ -154,8 +154,8 @@ fun Interactions(){
                     imageVector = Icons.Outlined.MoreVert,
                     contentDescription = null,
                     Modifier
-                        .fillMaxWidth(0.6f)
-                        .weight(0.2f))
+                        .fillMaxWidth(0.5f)
+                        .weight(0.18f))
             }
 
         }
