@@ -21,6 +21,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -28,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -45,21 +47,14 @@ import com.example.quick.screens.ReelsPage
 
 import com.example.quick.ui.theme.QuickTheme
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            QuickTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    MainScreen()
-                }
-            }
-        }
-    }
+@Composable
+fun MainActivity(
+    restartApp: (String) -> Unit,
+    viewModel: MainActivityViewModel = hiltViewModel()
+) {
+    LaunchedEffect(Unit) { viewModel.initialize(restartApp) }
+    MainScreen()
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,7 +67,7 @@ fun MainScreen() {
                 NavigationHost(navController = navController)
             }
         },
-        bottomBar ={ BottomNavigationBar(navController = navController)}
+        bottomBar = { BottomNavigationBar(navController = navController) }
 
     )
 
@@ -83,9 +78,9 @@ fun NavigationHost(navController: NavHostController) {
     NavHost(
         navController = navController,
         startDestination = NavRoutes.Reels.route,
-        enterTransition = {EnterTransition.None},
-        exitTransition = {ExitTransition.None}
-        ) {
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None }
+    ) {
         composable(NavRoutes.Home.route) {
             Home()
         }
@@ -112,7 +107,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         var selectedIndex by rememberSaveable {
             mutableIntStateOf(0)
         }
-        NavBarItems.BarItems.forEachIndexed() {index, item ->
+        NavBarItems.BarItems.forEachIndexed() { index, item ->
             NavigationBarItem(
 
 //                modifier = Modifier.background(Color.Red),
@@ -121,7 +116,7 @@ fun BottomNavigationBar(navController: NavHostController) {
 
                 onClick = {
                     selectedIndex = index
-                    Log.i("debug",currentRoute.toString())
+                    Log.i("debug", currentRoute.toString())
                     navController.navigate(item.route) {
                         //am un stack de screenuri si se da pop pana imi gaseste screenul cautat
                         popUpTo(navController.graph.findStartDestination().id) {
@@ -136,11 +131,14 @@ fun BottomNavigationBar(navController: NavHostController) {
                 },
                 icon = {
 
-                    Icon(imageVector =  if (selectedIndex == index) {item.selected}
-                                        else item.unselected,
+                    Icon(
+                        imageVector = if (selectedIndex == index) {
+                            item.selected
+                        } else item.unselected,
                         contentDescription = null,
                         modifier = if (selectedIndex == index) Modifier.fillMaxSize(0.55F)
-                                    else Modifier.fillMaxSize(0.5F))
+                        else Modifier.fillMaxSize(0.5F)
+                    )
                 }
 
             )

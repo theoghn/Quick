@@ -15,29 +15,3 @@ import com.google.firebase.auth.auth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-class Login: ComponentActivity() {
-    private lateinit var auth: FirebaseAuth
-
-// ...
-// Initialize Firebase Auth
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        auth = Firebase.auth
-        super.onCreate(savedInstanceState)
-        setContent {
-            QuickTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    LoginScreen()
-                }
-            }
-        }
-    }
-}
-@Composable
-fun LoginScreen(){
-
-}

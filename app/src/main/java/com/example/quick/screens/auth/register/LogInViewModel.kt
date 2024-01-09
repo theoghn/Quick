@@ -1,18 +1,15 @@
 package com.example.quick.screens.auth.register
 
-import com.example.quick.SIGN_IN_SCREEN
-import com.example.quick.NOTES_LIST_SCREEN
-import com.example.quick.SIGN_UP_SCREEN
+
+import com.example.quick.navigation.NavRoutes
+import com.example.quick.screens.ErrorHandlingViewModel
 import com.example.quick.service.AccountService
-import com.example.quick.screens.NotesAppViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class SignInViewModel @Inject constructor(
-    private val accountService: AccountService
-) : NotesAppViewModel() {
+class LogInViewModel @Inject constructor(private val accountService: AccountService) : ErrorHandlingViewModel() {
     val email = MutableStateFlow("")
     val password = MutableStateFlow("")
 
@@ -25,13 +22,14 @@ class SignInViewModel @Inject constructor(
     }
 
     fun onSignInClick(openAndPopUp: (String, String) -> Unit) {
-        launchCatching {
+        launchErrorCatch{
             accountService.signIn(email.value, password.value)
-            openAndPopUp(NOTES_LIST_SCREEN, SIGN_IN_SCREEN)
+            openAndPopUp(NavRoutes.Main.route, NavRoutes.Register.route)
         }
+
     }
 
     fun onSignUpClick(openAndPopUp: (String, String) -> Unit) {
-        openAndPopUp(SIGN_UP_SCREEN, SIGN_IN_SCREEN)
+        openAndPopUp("SIGN_UP_SCREEN", "SIGN_IN_SCREEN")
     }
 }

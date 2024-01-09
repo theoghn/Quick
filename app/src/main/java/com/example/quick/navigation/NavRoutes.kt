@@ -8,6 +8,10 @@ sealed class NavRoutes(val route: String) {
     object Post : NavRoutes("Post")
     object Login : NavRoutes("Login")
     object Register : NavRoutes("Register")
+    object Splash : NavRoutes("SplashScreen")
+
+    object Main : NavRoutes("MainActivity")
+
 
 
 
