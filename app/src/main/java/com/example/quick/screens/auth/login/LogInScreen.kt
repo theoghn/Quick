@@ -1,4 +1,4 @@
-package com.example.quick.screens.auth.register
+package com.example.quick.screens.auth.login
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

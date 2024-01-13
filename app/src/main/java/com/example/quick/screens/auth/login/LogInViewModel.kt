@@ -1,4 +1,4 @@
-package com.example.quick.screens.auth.register
+package com.example.quick.screens.auth.login
 
 
 import com.example.quick.navigation.NavRoutes
@@ -30,6 +30,6 @@ class LogInViewModel @Inject constructor(private val accountService: AccountServ
     }
 
     fun onSignUpClick(openAndPopUp: (String, String) -> Unit) {
-        openAndPopUp("SIGN_UP_SCREEN", "SIGN_IN_SCREEN")
+        openAndPopUp(NavRoutes.Register.route, NavRoutes.Login.route)
     }
 }

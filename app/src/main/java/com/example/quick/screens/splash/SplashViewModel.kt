@@ -17,6 +17,6 @@ class SplashViewModel @Inject constructor(
         if (accountService.hasUser())
             openAndPopUp(NavRoutes.Main.route, NavRoutes.Splash.route)
         else
-            openAndPopUp(NavRoutes.Register.route,  NavRoutes.Splash.route)
+            openAndPopUp(NavRoutes.Login.route,  NavRoutes.Splash.route)
     }
 }

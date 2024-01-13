@@ -17,7 +17,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.quick.navigation.NavRoutes
-import com.example.quick.screens.auth.register.LogInScreen
+import com.example.quick.screens.auth.login.LogInScreen
+import com.example.quick.screens.auth.register.RegisterScreen
 import com.example.quick.screens.splash.SplashScreen
 
 @Composable
@@ -52,18 +53,15 @@ fun NavGraphBuilder.notesGraph(appState: AppState) {
         )
     }
 
-    composable(NavRoutes.Register.route) {
+    composable(NavRoutes.Login.route) {
         LogInScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
     }
     composable(NavRoutes.Splash.route) {
         SplashScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
     }
+    composable(NavRoutes.Register.route) {
+        RegisterScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+    }
 
-//    composable(SIGN_UP_SCREEN) {
-//        SignUpScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
-//    }
-//
-//    composable(SPLASH_SCREEN) {
-//        SplashScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
-//    }
+
 }

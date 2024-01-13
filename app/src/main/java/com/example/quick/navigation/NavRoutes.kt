@@ -6,8 +6,8 @@ sealed class NavRoutes(val route: String) {
     object Reels : NavRoutes("Reels")
     object Profile : NavRoutes("Profile")
     object Post : NavRoutes("Post")
-    object Login : NavRoutes("Login")
-    object Register : NavRoutes("Register")
+    object Login : NavRoutes("LoginScreen")
+    object Register : NavRoutes("RegisterScreen")
     object Splash : NavRoutes("SplashScreen")
 
     object Main : NavRoutes("MainActivity")
