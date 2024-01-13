@@ -1,4 +1,4 @@
-package com.example.quick.screens
+package com.example.quick.screens.profile
 
 import android.content.Intent
 import android.net.Uri
@@ -13,35 +13,35 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AssignmentInd
+import androidx.compose.material.icons.outlined.Dehaze
 import androidx.compose.material.icons.outlined.GridOn
 import androidx.compose.material.icons.outlined.Link
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,10 +50,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
-import com.example.quick.MainScreen
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.quick.R
+import com.example.quick.screens.splash.SplashViewModel
 import com.example.quick.ui.theme.QuickTheme
 
 @Composable
@@ -77,22 +77,29 @@ fun CenteredText(
 }
 
 @Composable
-fun Profile() {
+fun Profile(viewModel: ProfileViewModel = hiltViewModel()) {
     ConstraintLayout(Modifier.fillMaxSize(1f)) {
-        val guide = createGuidelineFromTop(fraction = 0.15f)
-        val guide2 = createGuidelineFromTop(fraction = 0.30f)
-        val guide3 = createGuidelineFromTop(fraction = 0.35f)
-        val guide4 = createGuidelineFromTop(fraction = 0.50f)
-        val guide5 = createGuidelineFromTop(fraction = 0.58f)
+        val guu = createGuidelineFromTop(fraction = 0.05f)
+        val guide = createGuidelineFromTop(fraction = 0.20f)
+        val guide2 = createGuidelineFromTop(fraction = 0.35f)
+        val guide3 = createGuidelineFromTop(fraction = 0.40f)
+        val guide4 = createGuidelineFromTop(fraction = 0.55f)
+        val guide5 = createGuidelineFromTop(fraction = 0.63f)
 
 
-        val (picture, stats, description, buttons, stories, posts) = createRefs()
+
+        val (bar, picture, stats, description, buttons, stories, posts) = createRefs()
+        TopBar(modifier = Modifier.constrainAs(bar) {
+            height = Dimension.fillToConstraints
+            top.linkTo(parent.top, margin = 5.dp)
+            bottom.linkTo(guu, margin = 5.dp)
+        },viewModel)
 
         Box(
             Modifier
                 .constrainAs(picture) {
                     height = Dimension.fillToConstraints
-                    top.linkTo(parent.top, margin = 5.dp)
+                    top.linkTo(guu, margin = 5.dp)
                     bottom.linkTo(guide, margin = 5.dp)
                 }
                 .fillMaxWidth(0.3f)
@@ -107,7 +114,7 @@ fun Profile() {
                 .constrainAs(stats) {
                     height = Dimension.fillToConstraints
                     width = Dimension.fillToConstraints
-                    top.linkTo(parent.top, margin = 5.dp)
+                    top.linkTo(guu, margin = 5.dp)
                     start.linkTo(picture.end, margin = 5.dp)
                     end.linkTo(parent.end, margin = 5.dp)
                     bottom.linkTo(guide, margin = 5.dp)
@@ -174,12 +181,76 @@ fun Profile() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar(modifier: Modifier = Modifier,viewModel: ProfileViewModel) {
+    val sheetState = rememberModalBottomSheetState()
+    var isSheetOpen by rememberSaveable {
+        mutableStateOf(false)
+    }
+    Row(
+        modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+    ) {
+        Box(modifier = Modifier.fillMaxWidth(0.4f)) {
+            Text(
+                text = "Catty",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 15.dp)
+            )
+        }
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+            Icon(
+                imageVector = Icons.Outlined.Dehaze,
+                contentDescription = "Profile Menu",
+                Modifier
+                    .padding(end = 10.dp)
+                    .fillMaxWidth(0.2f)
+                    .fillMaxHeight()
+                    .clickable { isSheetOpen = true }
+
+            )
+        }
+    }
+    if (isSheetOpen) {
+        ModalBottomSheet(
+            sheetState = sheetState,
+            onDismissRequest = {
+                isSheetOpen = false
+            },
+        ) {
+            Column(Modifier.fillMaxWidth().fillMaxHeight(0.2f)){
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.40f)
+                    .padding(10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Log out",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = Color.Red,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                viewModel.onLogOutClick()
+                            })
+                }
+            }
+
+        }
+    }
+}
+
 @Composable
 fun ProfilePic() {
     Box(
         modifier = Modifier
-            .clip(CircleShape)
-            .background(Color.Blue),
+            .clip(CircleShape),
     ) {
         Image(painter = painterResource(id = R.drawable.cat), contentDescription = "profile pic")
     }
