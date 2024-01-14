@@ -20,6 +20,7 @@ import com.example.quick.navigation.NavRoutes
 import com.example.quick.screens.auth.login.LogInScreen
 import com.example.quick.screens.auth.register.RegisterScreen
 import com.example.quick.screens.profile.Profile
+import com.example.quick.screens.setup.ProfileSetupScreen
 import com.example.quick.screens.splash.SplashScreen
 
 @Composable
@@ -63,6 +64,12 @@ fun NavGraphBuilder.notesGraph(appState: AppState) {
     }
     composable(NavRoutes.Register.route) {
         RegisterScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+    }
+    composable(NavRoutes.Profile.route) {
+        Profile(openScreen = { route -> appState.navigate(route) })
+    }
+    composable(NavRoutes.ProfileSetup.route) {
+        ProfileSetupScreen()
     }
 
 
