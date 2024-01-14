@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface UserService {
     val currentUserDetails: Flow<UserDetails?>
     suspend fun readDetails(userId: String): UserDetails?
+
+    suspend fun updateDetails(userDetails: UserDetails)
 }

@@ -1,5 +1,6 @@
 package com.example.quick.screens.setup
 
+import android.net.Uri
 import android.util.Log
 import com.example.quick.models.UserDetails
 import com.example.quick.screens.ErrorHandlingViewModel
@@ -8,9 +9,11 @@ import com.example.quick.service.UserService
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.io.File
 import javax.inject.Inject
-
+@HiltViewModel
 class ProfileSetupViewModel @Inject constructor(
     private val accountService: AccountService,
     private val userService: UserService
@@ -38,28 +41,28 @@ class ProfileSetupViewModel @Inject constructor(
     }
 
     fun updateUserDetails() {
-        val storageRef = Firebase.storage.reference.child("images/"+image.value)
-        storageRef.downloadUrl.addOnSuccessListener {
-            val link = it.toString()
-            Log.d("Picture Url", link)
-        }.addOnFailureListener {
-            Log.d("Picture Url", "Failure")
+        if(image.value!= "" &&description.value!= ""&&link.value!= ""&&username.value!= ""){
+            val details = UserDetails(
+                accountService.currentUserId,
+                username.value,
+                description.value,
+                link.value,
+                0,
+                0,
+                0,
+                image.value
+            )
+
+
+            Log.d("UserDetails","${image.value},${description.value}")
+            launchErrorCatch {
+                userService.updateDetails(details)
+            }
         }
-        val details = UserDetails(
-            accountService.currentUserId,
-            username.value,
-            description.value,
-            link.value,
-            0,
-            0,
-            0,
-            image.value
-        )
-        Firebase.firestore.collection("users")
-            .document(accountService.currentUserId)
-            .set(details)
-            .addOnSuccessListener { Log.d("UserSuccess", "User Details successfully written!") }
-            .addOnFailureListener { e -> Log.w("UserFail", "Error writing document", e) }
+        else{
+            Log.d("UserDetails","Failed")
+        }
+
     }
 
 

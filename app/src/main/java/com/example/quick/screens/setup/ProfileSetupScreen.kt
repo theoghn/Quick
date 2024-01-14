@@ -38,6 +38,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,8 +58,14 @@ fun customTextFieldColors() = TextFieldDefaults.colors(
 
 @Composable
 fun ProfileSetupScreen(
-//    profileSetupViewModel: ProfileSetupViewModel = hiltViewModel()
+    viewModel: ProfileSetupViewModel = hiltViewModel()
 ) {
+    val username by viewModel.username.collectAsState()
+    val description by viewModel.description.collectAsState()
+    val link by viewModel.link.collectAsState()
+    val image by viewModel.image.collectAsState()
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -74,7 +81,11 @@ fun ProfileSetupScreen(
                 .fillMaxWidth()
                 .padding(12.dp)
         )
-        PhotoPicker()
+        val updateImage: (String) -> Unit = { newUsername ->
+            viewModel.updateImage(newUsername)
+        }
+        PhotoPicker(updateImage)
+
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
@@ -94,8 +105,8 @@ fun ProfileSetupScreen(
                     shape = RoundedCornerShape(30)
                 ),
             colors = customTextFieldColors(),
-            value = "username.value",
-            onValueChange = { "viewModel.updateEmail(it)" },
+            value = username,
+            onValueChange = { viewModel.updateUsername(it) },
             placeholder = { Text("Email") },
             leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email") }
         )
@@ -112,8 +123,8 @@ fun ProfileSetupScreen(
                     shape = RoundedCornerShape(30)
                 ),
             colors = customTextFieldColors(),
-            value = "description.value",
-            onValueChange = { "viewModel.updateEmail(it)" },
+            value = description,
+            onValueChange = { viewModel.updateDescription(it) },
             placeholder = { Text("Email") },
             leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email") }
         )
@@ -129,30 +140,34 @@ fun ProfileSetupScreen(
                     shape = RoundedCornerShape(30)
                 ),
             colors = customTextFieldColors(),
-            value = "link.value",
-            onValueChange = { "viewModel.updateEmail(it)" },
+            value = link,
+            onValueChange = { viewModel.updateLink(it) },
             placeholder = { Text("Email") },
             leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email") }
         )
+
+
+        Button(onClick = { viewModel.updateUserDetails() }) {
+
+        }
+
     }
 
 }
 
 @Composable
-fun PhotoPicker() {
+fun PhotoPicker(update:(String)->Unit) {
     var uri by remember {
         mutableStateOf<Uri?>(null)
     }
 
     val singlePhotoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = {
-            uri = it
+        onResult = {uris->
+            uri = uris
+            update(uris.toString())
         }
     )
-
-    val context = LocalContext.current
-
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally

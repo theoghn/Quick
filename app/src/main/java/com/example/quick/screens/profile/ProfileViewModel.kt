@@ -43,6 +43,6 @@ class ProfileViewModel @Inject constructor(
     }
 
     companion object {
-        private val default_details = UserDetails("", "", "", "", 0, 0, 0)
+        private val default_details = UserDetails()
     }
 }
