@@ -13,12 +13,12 @@ import javax.inject.Inject
 import com.google.firebase.firestore.toObject
 
 class UserServiceImpl @Inject constructor(private val auth:AccountService):UserService {
-//    override val currentUserDetails: Flow<UserDetails> = callbackFlow {
-//        Firebase.firestore
-//            .collection("users")
-//            .whereEqualTo("userID", auth.currentUserId)
-//            .dataObjects<UserDetails>()
-//    }
+    override val currentUserDetails: Flow<UserDetails> = callbackFlow {
+        Firebase.firestore
+            .collection("users")
+            .whereEqualTo("userID", auth.currentUserId)
+            .dataObjects<UserDetails>()
+    }
 
     override suspend fun readDetails(userId: String): UserDetails?{
         return Firebase.firestore

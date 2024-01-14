@@ -2,11 +2,14 @@ package com.example.quick.screens.auth.login
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -26,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,13 +55,17 @@ fun LogInScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
+
+        Icon(
             imageVector =  Icons.Outlined.People,
             contentDescription = "Auth image",
             modifier = modifier
-                .fillMaxWidth()
+                .weight(0.1f,false)
+                .fillMaxSize()
                 .padding(16.dp, 4.dp)
+
         )
+
 
         Spacer(modifier = Modifier
             .fillMaxWidth()
@@ -68,16 +76,19 @@ fun LogInScreen(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(16.dp, 4.dp)
+                .weight(0.4f,false)
+                .clip(RoundedCornerShape(30))
                 .border(
-                    BorderStroke(width = 2.dp, color = Color.Magenta),
-                    shape = RoundedCornerShape(50)
+                    BorderStroke(width = 2.dp, color = Color.Gray),
+                    shape = RoundedCornerShape(30)
                 ),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                disabledContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedIndicatorColor = Color.White,
+                unfocusedIndicatorColor = Color.White,
             ),
             value = email.value,
             onValueChange = { viewModel.updateEmail(it) },
@@ -90,15 +101,18 @@ fun LogInScreen(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(16.dp, 4.dp)
+                .clip(RoundedCornerShape(30))
                 .border(
-                    BorderStroke(width = 2.dp, color = Color.Magenta),
-                    shape = RoundedCornerShape(50)
+                    BorderStroke(width = 2.dp, color = Color.Gray),
+                    shape = RoundedCornerShape(30)
                 ),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedIndicatorColor = Color.White,
+                unfocusedIndicatorColor = Color.White
             ),
             value = password.value,
             onValueChange = { viewModel.updatePassword(it) },

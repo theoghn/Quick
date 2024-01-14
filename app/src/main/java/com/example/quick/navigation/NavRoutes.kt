@@ -11,6 +11,8 @@ sealed class NavRoutes(val route: String) {
     object Splash : NavRoutes("SplashScreen")
 
     object Main : NavRoutes("MainActivity")
+    object ProfileSetup : NavRoutes("ProfileSetupScreen")
+
 
 
 

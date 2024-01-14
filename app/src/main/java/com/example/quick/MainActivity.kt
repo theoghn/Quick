@@ -39,21 +39,22 @@ import com.example.quick.ui.theme.QuickTheme
 @Composable
 fun MainActivity(
     restartApp: (String) -> Unit,
+    openScreen: (String) -> Unit,
     viewModel: MainActivityViewModel = hiltViewModel()
 ) {
     LaunchedEffect(Unit) { viewModel.initialize(restartApp) }
-    MainScreen()
+    MainScreen(openScreen)
 
 }
 
 
 @Composable
-fun MainScreen() {
+fun MainScreen(openScreen: (String) -> Unit) {
     val navController = rememberNavController()
     Scaffold(
         content = { padding ->
             Column(Modifier.padding(padding)) {
-                NavigationHost(navController = navController)
+                NavigationHost(navController = navController,openScreen)
             }
         },
         bottomBar = { BottomNavigationBar(navController = navController) }
@@ -63,7 +64,7 @@ fun MainScreen() {
 }
 
 @Composable
-fun NavigationHost(navController: NavHostController) {
+fun NavigationHost(navController: NavHostController,openScreen: (String) -> Unit) {
     NavHost(
         navController = navController,
         startDestination = NavRoutes.Profile.route,
@@ -83,7 +84,7 @@ fun NavigationHost(navController: NavHostController) {
             ReelsPage()
         }
         composable(NavRoutes.Profile.route) {
-            Profile()
+            Profile(openScreen = openScreen)
         }
     }
 }
@@ -136,10 +137,10 @@ fun BottomNavigationBar(navController: NavHostController) {
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    QuickTheme(useDarkTheme = true) {
-        MainScreen()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview() {
+//    QuickTheme(useDarkTheme = true) {
+//        MainScreen()
+//    }
+//}

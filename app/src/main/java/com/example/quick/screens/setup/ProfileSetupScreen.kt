@@ -1,7 +1,7 @@
-package com.example.quick.screens.auth.register
+package com.example.quick.screens.setup
 
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,23 +15,36 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.outlined.AssignmentInd
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.quick.screens.auth.register.customTextFieldColors
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImage
+
 @Composable
 fun customTextFieldColors() = TextFieldDefaults.colors(
     focusedTextColor = Color.Black,
@@ -41,42 +54,39 @@ fun customTextFieldColors() = TextFieldDefaults.colors(
     focusedIndicatorColor = Color.White,
     unfocusedIndicatorColor = Color.White,
 )
-@Composable
-fun RegisterScreen(
-    openAndPopUp: (String, String) -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: RegisterViewModel = hiltViewModel()
-) {
-    val email = viewModel.email.collectAsState()
-    val password = viewModel.password.collectAsState()
-    val confirmPassword = viewModel.confirmPassword.collectAsState()
 
+@Composable
+fun ProfileSetupScreen(
+//    profileSetupViewModel: ProfileSetupViewModel = hiltViewModel()
+) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            imageVector = Icons.Outlined.AssignmentInd,
-            contentDescription = "Auth image",
-            modifier = modifier
-                .weight(0.1f,false)
-                .fillMaxSize(0.7f)
-                .padding(16.dp, 4.dp)
+        Text(text = "Setup your profile", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        )
+        PhotoPicker()
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
         )
 
-        Spacer(modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp))
 
         OutlinedTextField(
             singleLine = true,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.3f,false)
+                .weight(0.3f, false)
                 .padding(16.dp, 4.dp)
                 .clip(RoundedCornerShape(30))
                 .border(
@@ -84,16 +94,17 @@ fun RegisterScreen(
                     shape = RoundedCornerShape(30)
                 ),
             colors = customTextFieldColors(),
-            value = email.value,
-            onValueChange = { viewModel.updateEmail(it) },
+            value = "username.value",
+            onValueChange = { "viewModel.updateEmail(it)" },
             placeholder = { Text("Email") },
             leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email") }
         )
 
         OutlinedTextField(
             singleLine = true,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
+                .weight(0.3f, false)
                 .padding(16.dp, 4.dp)
                 .clip(RoundedCornerShape(30))
                 .border(
@@ -101,17 +112,16 @@ fun RegisterScreen(
                     shape = RoundedCornerShape(30)
                 ),
             colors = customTextFieldColors(),
-            value = password.value,
-            onValueChange = { viewModel.updatePassword(it) },
-            placeholder = { Text("Password") },
-            leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "Password") },
-            visualTransformation = PasswordVisualTransformation()
+            value = "description.value",
+            onValueChange = { "viewModel.updateEmail(it)" },
+            placeholder = { Text("Email") },
+            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email") }
         )
-
         OutlinedTextField(
             singleLine = true,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
+                .weight(0.3f, false)
                 .padding(16.dp, 4.dp)
                 .clip(RoundedCornerShape(30))
                 .border(
@@ -119,28 +129,59 @@ fun RegisterScreen(
                     shape = RoundedCornerShape(30)
                 ),
             colors = customTextFieldColors(),
-            value = confirmPassword.value,
-            onValueChange = { viewModel.updateConfirmPassword(it) },
-            placeholder = { Text("Confirm Password") },
-            leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "Confirm Password") },
-            visualTransformation = PasswordVisualTransformation()
+            value = "link.value",
+            onValueChange = { "viewModel.updateEmail(it)" },
+            placeholder = { Text("Email") },
+            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email") }
         )
+    }
 
-        Spacer(modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp))
+}
 
-        Button(
-            onClick = { viewModel.onSignUpClick(openAndPopUp) },
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(16.dp, 0.dp)
+@Composable
+fun PhotoPicker() {
+    var uri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+
+    val singlePhotoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = {
+            uri = it
+        }
+    )
+
+    val context = LocalContext.current
+
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .clip(CircleShape)
+                .size(100.dp)
+                .background(Color.Gray),
         ) {
-            Text(
-                text = "Sign Up",
-                fontSize = 16.sp,
-                modifier = modifier.padding(0.dp, 6.dp)
+            AsyncImage(
+                model = uri,
+                contentDescription = null,
             )
         }
+        Button(onClick = {
+            singlePhotoPicker.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+
+        }) {
+            Text("Pick Single Image")
+        }
     }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewSetup() {
+    ProfileSetupScreen()
 }

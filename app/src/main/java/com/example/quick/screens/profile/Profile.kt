@@ -2,9 +2,9 @@ package com.example.quick.screens.profile
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,16 +14,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AssignmentInd
 import androidx.compose.material.icons.outlined.Dehaze
 import androidx.compose.material.icons.outlined.GridOn
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -38,11 +42,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -54,10 +58,10 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.quick.R
+import coil.compose.AsyncImage
 import com.example.quick.models.UserDetails
 import com.example.quick.ui.theme.QuickTheme
-import com.google.firebase.firestore.auth.User
+import kotlinx.coroutines.delay
 
 @Composable
 fun CenteredText(
@@ -78,11 +82,40 @@ fun CenteredText(
         // Add any other common properties here
     )
 }
+@Composable
+fun Profile(viewModel: ProfileViewModel = hiltViewModel(),openScreen: (String) -> Unit) {
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        viewModel.initialize()
+        delay(1000L)
+        isLoading = false
+    }
+
+    if(isLoading){
+        Column(
+            modifier =
+            Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .background(color = MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
+        }
+    }
+    else{
+        ProfileContent(viewModel,openScreen)
+    }
+}
 
 @Composable
-fun Profile(viewModel: ProfileViewModel = hiltViewModel()) {
+fun ProfileContent(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
+//    LaunchedEffect(Unit) { viewModel.initialize() }
     val profileDetails by viewModel.userDetails.collectAsState()
-    LaunchedEffect(Unit) { viewModel.initialize() }
+
 
     ConstraintLayout(Modifier.fillMaxSize(1f)) {
         val guu = createGuidelineFromTop(fraction = 0.05f)
@@ -99,7 +132,7 @@ fun Profile(viewModel: ProfileViewModel = hiltViewModel()) {
             height = Dimension.fillToConstraints
             top.linkTo(parent.top, margin = 5.dp)
             bottom.linkTo(guu, margin = 5.dp)
-        },viewModel,profileDetails)
+        }, { viewModel.onLogOutClick() },profileDetails)
 
         Box(
             Modifier
@@ -112,7 +145,7 @@ fun Profile(viewModel: ProfileViewModel = hiltViewModel()) {
                 .fillMaxHeight(),
             contentAlignment = Alignment.Center
         ) {
-            ProfilePic()
+            ProfilePic(profileDetails)
         }
 
         Row(
@@ -156,7 +189,7 @@ fun Profile(viewModel: ProfileViewModel = hiltViewModel()) {
                     bottom.linkTo(guide3, margin = 5.dp)
                 }
         ) {
-            EditShareButtons()
+            EditShareButtons (viewModel,openScreen)
         }
 
         Row(
@@ -189,7 +222,7 @@ fun Profile(viewModel: ProfileViewModel = hiltViewModel()) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(modifier: Modifier = Modifier,viewModel: ProfileViewModel,profileDetails:UserDetails) {
+fun TopBar(modifier: Modifier = Modifier, onLogOutClick: () -> Unit,profileDetails:UserDetails) {
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
@@ -243,7 +276,7 @@ fun TopBar(modifier: Modifier = Modifier,viewModel: ProfileViewModel,profileDeta
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                viewModel.onLogOutClick()
+                                onLogOutClick()
                             })
                 }
             }
@@ -253,12 +286,17 @@ fun TopBar(modifier: Modifier = Modifier,viewModel: ProfileViewModel,profileDeta
 }
 
 @Composable
-fun ProfilePic() {
+fun ProfilePic(profileDetails: UserDetails) {
     Box(
         modifier = Modifier
             .clip(CircleShape),
     ) {
-        Image(painter = painterResource(id = R.drawable.cat), contentDescription = "profile pic")
+        AsyncImage(
+            model = profileDetails.picture,
+            contentDescription = null,
+        )
+//        Image(painter = painterResource(id = R.drawable.cat),
+//            contentDescription = "profile pic")
     }
 }
 
@@ -335,10 +373,10 @@ fun ProfileDetails(profileDetails: UserDetails) {
                         .padding(top = 8.dp)
                 )
                 ClickableText(
-                    text = AnnotatedString("https://www.twitch.tv/omie"),
+                    text = AnnotatedString(profileDetails.link),
                     onClick = {
                         val openURL =
-                            Intent(Intent.ACTION_VIEW, Uri.parse("https://www.twitch.tv/omie"))
+                            Intent(Intent.ACTION_VIEW, Uri.parse(profileDetails.link))
                         startActivity(context, openURL, null)
                     },
                     style = TextStyle(
@@ -357,13 +395,14 @@ fun ProfileDetails(profileDetails: UserDetails) {
 }
 
 @Composable
-fun EditShareButtons() {
+fun EditShareButtons( viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
     Row {
         RoundedButton(
             text = "Edit Profile",
             modifier = Modifier
                 .padding(start = 2.dp)
                 .weight(weight = 0.5f, fill = true)
+                .clickable { viewModel.onEditProfileClick(openScreen) }
         )
         RoundedButton(
             text = "Share Profile",
@@ -383,7 +422,6 @@ fun RoundedButton(
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(6.dp))
-            .clickable { }
             .background(Color.DarkGray),
         contentAlignment = Alignment.Center
 
@@ -447,11 +485,11 @@ fun PostsTagsButtons() {
 
 }
 
-
-@Preview
-@Composable
-fun ProfilePreviews() {
-    QuickTheme(useDarkTheme = true) {
-        Profile()
-    }
-}
+//
+//@Preview
+//@Composable
+//fun ProfilePreviews() {
+//    QuickTheme(useDarkTheme = true) {
+//        Profile()
+//    }
+//}
