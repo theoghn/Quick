@@ -102,7 +102,7 @@ fun RegisterScreen(
             ),
             value = password.value,
             onValueChange = { viewModel.updatePassword(it) },
-            placeholder = { Text("Passowrd") },
+            placeholder = { Text("Password") },
             leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "Password") },
             visualTransformation = PasswordVisualTransformation()
         )
@@ -125,7 +125,7 @@ fun RegisterScreen(
             ),
             value = confirmPassword.value,
             onValueChange = { viewModel.updateConfirmPassword(it) },
-            placeholder = { Text("Password") },
+            placeholder = { Text("Confirm Password") },
             leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "Confirm Password") },
             visualTransformation = PasswordVisualTransformation()
         )

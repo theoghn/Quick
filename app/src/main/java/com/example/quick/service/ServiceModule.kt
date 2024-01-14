@@ -14,5 +14,6 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent ::class)
 abstract class ServiceModule {
     @Binds abstract fun provideAccountService(impl: AccountServiceMethods): AccountService
+    @Binds abstract fun provideUserService(impl: UserServiceImpl): UserService
 
 }

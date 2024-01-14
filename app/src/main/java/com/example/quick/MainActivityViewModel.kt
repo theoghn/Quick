@@ -1,6 +1,7 @@
 package com.example.quick
 
 
+import android.util.Log
 import com.example.quick.navigation.NavRoutes
 import com.example.quick.screens.ErrorHandlingViewModel
 import com.example.quick.service.AccountService
@@ -14,6 +15,7 @@ class MainActivityViewModel @Inject constructor(
 
     fun initialize(restartApp: (String) -> Unit) {
         observeAuthenticationState(restartApp)
+        Log.d("TheoTag",accountService.currentUserId)
     }
 
     private fun observeAuthenticationState(restartApp: (String) -> Unit) {

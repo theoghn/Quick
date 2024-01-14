@@ -28,6 +28,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -53,8 +55,9 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.quick.R
-import com.example.quick.screens.splash.SplashViewModel
+import com.example.quick.models.UserDetails
 import com.example.quick.ui.theme.QuickTheme
+import com.google.firebase.firestore.auth.User
 
 @Composable
 fun CenteredText(
@@ -78,6 +81,9 @@ fun CenteredText(
 
 @Composable
 fun Profile(viewModel: ProfileViewModel = hiltViewModel()) {
+    val profileDetails by viewModel.userDetails.collectAsState()
+    LaunchedEffect(Unit) { viewModel.initialize() }
+
     ConstraintLayout(Modifier.fillMaxSize(1f)) {
         val guu = createGuidelineFromTop(fraction = 0.05f)
         val guide = createGuidelineFromTop(fraction = 0.20f)
@@ -93,7 +99,7 @@ fun Profile(viewModel: ProfileViewModel = hiltViewModel()) {
             height = Dimension.fillToConstraints
             top.linkTo(parent.top, margin = 5.dp)
             bottom.linkTo(guu, margin = 5.dp)
-        },viewModel)
+        },viewModel,profileDetails)
 
         Box(
             Modifier
@@ -120,7 +126,7 @@ fun Profile(viewModel: ProfileViewModel = hiltViewModel()) {
                     bottom.linkTo(guide, margin = 5.dp)
                 }
         ) {
-            ProfileStats()
+            ProfileStats(profileDetails)
         }
 
         Column(
@@ -136,7 +142,7 @@ fun Profile(viewModel: ProfileViewModel = hiltViewModel()) {
                 }
 
         ) {
-            ProfileDetails()
+            ProfileDetails(profileDetails)
         }
 
         Row(
@@ -183,7 +189,7 @@ fun Profile(viewModel: ProfileViewModel = hiltViewModel()) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(modifier: Modifier = Modifier,viewModel: ProfileViewModel) {
+fun TopBar(modifier: Modifier = Modifier,viewModel: ProfileViewModel,profileDetails:UserDetails) {
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
@@ -195,7 +201,7 @@ fun TopBar(modifier: Modifier = Modifier,viewModel: ProfileViewModel) {
     ) {
         Box(modifier = Modifier.fillMaxWidth(0.4f)) {
             Text(
-                text = "Catty",
+                text = profileDetails.username,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 15.dp)
@@ -257,7 +263,7 @@ fun ProfilePic() {
 }
 
 @Composable
-fun ProfileStats() {
+fun ProfileStats(profileDetails: UserDetails) {
 //the size is defined like this because i didn't think to use another column so i can use the weight modifier
     Box(
         modifier = Modifier
@@ -266,7 +272,7 @@ fun ProfileStats() {
         contentAlignment = Alignment.Center
     ) {
         Column {
-            CenteredText(text = "0", fontWeight = FontWeight.Bold)
+            CenteredText(text = profileDetails.posts.toString(), fontWeight = FontWeight.Bold)
             CenteredText(text = "Posts")
         }
     }
@@ -277,7 +283,7 @@ fun ProfileStats() {
         contentAlignment = Alignment.Center
     ) {
         Column {
-            CenteredText(text = "223", fontWeight = FontWeight.Bold)
+            CenteredText(text = profileDetails.followers.toString(), fontWeight = FontWeight.Bold)
             CenteredText(text = "Followers")
         }
     }
@@ -289,14 +295,14 @@ fun ProfileStats() {
     )
     {
         Column {
-            CenteredText(text = "432", fontWeight = FontWeight.Bold)
+            CenteredText(text = profileDetails.following.toString(), fontWeight = FontWeight.Bold)
             CenteredText(text = "Following")
         }
     }
 }
 
 @Composable
-fun ProfileDetails() {
+fun ProfileDetails(profileDetails: UserDetails) {
     val context = LocalContext.current
     //here i just use another column that matches the father column to use weight modifier
     Column(Modifier.fillMaxSize()) {
@@ -305,7 +311,7 @@ fun ProfileDetails() {
                 .weight(weight = 0.3f, fill = true)
                 .fillMaxSize()
         ) {
-            Text(text = "Catty", fontWeight = FontWeight.Bold)
+            Text(text = profileDetails.username, fontWeight = FontWeight.Bold)
         }
         Box(
             modifier = Modifier
@@ -313,7 +319,7 @@ fun ProfileDetails() {
                 .fillMaxSize()
         )
         {
-            Text(text = "I am a cat")
+            Text(profileDetails.description)
         }
         Box(
             modifier = Modifier
