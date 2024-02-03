@@ -94,7 +94,7 @@ fun Profile(viewModel: ProfileViewModel = hiltViewModel(),openScreen: (String) -
             delay(1000L)
             isLoading = false
         }
-        Log.d("Profile Access","accessed")
+
     }
     else {
         isLoading = false

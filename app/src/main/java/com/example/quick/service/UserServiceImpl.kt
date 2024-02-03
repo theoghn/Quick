@@ -30,8 +30,33 @@ class UserServiceImpl @Inject constructor(private val auth: AccountService) : Us
             .document(userId).get().await().toObject()
     }
 
+
     override suspend fun updateDetails(userDetails: UserDetails) {
 
+        if (userDetails.picture.contains("https://firebasestorage.googleapis.com/v0/b/quick-de5b2.appspot.com/o/images",true) || userDetails.picture == ""){
+            val details =
+                UserDetails(
+                    userDetails.userId,
+                    userDetails.username,
+                    userDetails.description,
+                    userDetails.link,
+                    userDetails.followers,
+                    userDetails.following,
+                    userDetails.posts,
+                    userDetails.picture
+                )
+            Firebase.firestore.collection("users")
+                .document(auth.currentUserId)
+                .set(details)
+                .addOnSuccessListener {
+                    Log.d(
+                        "UserSuccess",
+                        "User Details successfully written without uploading the image!"
+                    )
+                }
+                .addOnFailureListener { e -> Log.w("UserFail", "Error writing document", e) }
+            return
+        }
         val file = userDetails.picture.toUri()
 
         val storageRef = Firebase.storage.reference.child("images/${file.lastPathSegment}")

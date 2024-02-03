@@ -1,9 +1,6 @@
 package com.example.quick
 
 import com.example.quick.ui.theme.QuickTheme
-
-
-
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -69,7 +66,7 @@ fun NavGraphBuilder.notesGraph(appState: AppState) {
         Profile(openScreen = { route -> appState.navigate(route) })
     }
     composable(NavRoutes.ProfileSetup.route) {
-        ProfileSetupScreen()
+        ProfileSetupScreen(openScreen = { route -> appState.navigate(route) })
     }
 
 

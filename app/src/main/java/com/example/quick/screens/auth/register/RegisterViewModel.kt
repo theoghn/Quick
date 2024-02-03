@@ -26,6 +26,10 @@ class RegisterViewModel @Inject constructor(
         confirmPassword.value = newConfirmPassword
     }
 
+    fun exitRegister(openAndPopUp: (String, String) -> Unit){
+        openAndPopUp(NavRoutes.Login.route, NavRoutes.Register.route)
+    }
+
     fun onSignUpClick(openAndPopUp: (String, String) -> Unit) {
         launchErrorCatch {
             if (password.value != confirmPassword.value) {
@@ -33,7 +37,7 @@ class RegisterViewModel @Inject constructor(
             }
 
             accountService.signUp(email.value, password.value)
-            openAndPopUp(NavRoutes.Main.route, NavRoutes.Register.route)
+            openAndPopUp(NavRoutes.ProfileSetup.route, NavRoutes.Register.route)
         }
     }
 }
