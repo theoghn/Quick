@@ -2,6 +2,7 @@ package com.example.quick.screens.profile
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -85,10 +86,17 @@ fun CenteredText(
 @Composable
 fun Profile(viewModel: ProfileViewModel = hiltViewModel(),openScreen: (String) -> Unit) {
     var isLoading by remember { mutableStateOf(true) }
+    val isInit by viewModel.initialized.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.initialize()
-        delay(1000L)
+    if (!isInit){
+        LaunchedEffect(Unit) {
+            viewModel.initialize()
+            delay(1000L)
+            isLoading = false
+        }
+        Log.d("Profile Access","accessed")
+    }
+    else {
         isLoading = false
     }
 

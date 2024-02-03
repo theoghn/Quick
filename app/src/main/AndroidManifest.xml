@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Quick"
         tools:targetApi="31"
-        android:name = ".NotesHiltApp">
+        android:name = ".QuickHiltApp">
         <activity
             android:name=".QuickActivity"
             android:exported="true"

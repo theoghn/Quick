@@ -24,17 +24,21 @@ class ProfileViewModel @Inject constructor(
 ) : ErrorHandlingViewModel() {
 
     val userDetails = MutableStateFlow(default_details)
+    val initialized = MutableStateFlow(false)
 
     fun initialize() {
         launchErrorCatch {
             userDetails.value =
                 userService.readDetails(accountService.currentUserId) ?: default_details
+            initialized.value = true
         }
+
     }
 
     fun onLogOutClick() {
         launchErrorCatch {
             accountService.signOut()
+            initialized.value = false
         }
     }
     fun onEditProfileClick(openScreen: (String) -> Unit) {
