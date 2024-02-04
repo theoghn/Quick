@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,10 +39,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 
 @Composable
 fun Post() {
+
+
     val lightBlue = Color(0xFF6495ED)
     Scaffold(
         topBar = {
@@ -75,57 +79,59 @@ fun Post() {
 }
 
 @Composable
-fun PhotoPicker() {
+fun PhotoPicker(viewModel: PostViewModel = hiltViewModel()) {
+    val caption by viewModel.caption.collectAsState()
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    var uri by remember {
-        mutableStateOf<String>("")
-    }
+    val uri by viewModel.image.collectAsState()
 
     val singlePhotoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uris ->
-            uri = uris.toString()
-//            update(uris.toString())
+            viewModel.updateImage(uris.toString())
         }
     )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {focusManager.clearFocus()}
+        modifier = Modifier.clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() }) { focusManager.clearFocus() }
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.7f)
-                .background(if (uri != "") Color.Transparent else Color.Gray),
+                .background(if (uri != "") Color.White else Color.Gray),
 //            contentAlignment = Alignment.Center
         ) {
             AsyncImage(
                 model = uri,
                 contentScale = ContentScale.Fit,
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize().focusable()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .focusable()
 
             )
         }
+
         Button(onClick = {
             singlePhotoPicker.launch(
                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
             )
 
-        },modifier =  Modifier.focusable()) {
+        }, modifier = Modifier.focusable()) {
             Text("Select Image")
         }
-        val rainbowColors = listOf( // Red
+
+        val rainbowColors = listOf(
             Color(0xFFFF7F27), // Orange
             Color(0xFFFFED00), // Yellow
             Color(0xFF22B14C), // Green
             Color(0xFF00A2E8), // Blue
             Color(0xFF652D8B)  // Indigo
-            // Add more colors as needed for a complete rainbow
         )
-        var text by remember { mutableStateOf("") }
         val brush = remember {
             Brush.linearGradient(
                 colors = rainbowColors
@@ -133,8 +139,8 @@ fun PhotoPicker() {
         }
 
         TextField(
-            value = text,
-            onValueChange = { text = it },
+            value = caption,
+            onValueChange = { viewModel.updateCaption(it) },
             textStyle = TextStyle(brush = brush),
             modifier = Modifier
                 .fillMaxWidth(0.9f)

@@ -41,7 +41,6 @@ import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,7 +48,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import coil.compose.AsyncImage
-import com.example.quick.models.UserDetails
 import com.example.quick.screens.profile.ProfileViewModel
 import kotlinx.coroutines.delay
 
