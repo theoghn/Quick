@@ -239,7 +239,7 @@ fun PhotoPicker(update: (String) -> Unit, pic: String) {
             )
 
         }) {
-            Text("Pick Single Image")
+            Text("Select Image")
         }
     }
 }

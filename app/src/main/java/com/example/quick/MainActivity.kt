@@ -18,7 +18,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -30,11 +29,9 @@ import com.example.quick.navigation.NavBarItems
 import com.example.quick.navigation.NavRoutes
 import com.example.quick.screens.Find
 import com.example.quick.screens.Home
-import com.example.quick.screens.Post
+import com.example.quick.screens.post.Post
 import com.example.quick.screens.profile.Profile
 import com.example.quick.screens.ReelsPage
-
-import com.example.quick.ui.theme.QuickTheme
 
 @Composable
 fun MainActivity(
