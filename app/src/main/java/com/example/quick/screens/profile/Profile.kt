@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.Dehaze
 import androidx.compose.material.icons.outlined.GridOn
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +54,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
@@ -86,11 +89,12 @@ fun CenteredText(
         // Add any other common properties here
     )
 }
+
 @Composable
-fun Profile(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
+fun Profile(viewModel: ProfileViewModel, openScreen: (String) -> Unit) {
 //    var isLoading by remember { mutableStateOf(true) }
     val isInit by viewModel.initialized.collectAsState()
-    Log.d("Comp1",isInit.toString())
+    Log.d("Comp1", isInit.toString())
 
 //    if (!isInit){
 //        LaunchedEffect(Unit) {
@@ -102,8 +106,8 @@ fun Profile(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
 //    else {
 //        isLoading = false
 //    }
-    Log.d("Comp2",isInit.toString())
-    if(!isInit){
+    Log.d("Comp2", isInit.toString())
+    if (!isInit) {
         Column(
             modifier =
             Modifier
@@ -116,15 +120,14 @@ fun Profile(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
         ) {
             CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
         }
-    }
-    else{
+    } else {
 
-        ProfileContent(viewModel,openScreen)
+        ProfileContent(viewModel, openScreen)
     }
 }
 
 @Composable
-fun ProfileContent(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
+fun ProfileContent(viewModel: ProfileViewModel, openScreen: (String) -> Unit) {
 //    LaunchedEffect(Unit) { viewModel.initialize() }
     val profileDetails by viewModel.userDetails.collectAsState()
     val posts by viewModel.posts.collectAsState()
@@ -140,12 +143,12 @@ fun ProfileContent(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
 
 
 
-        val (bar, picture, stats, description, buttons, stories, buttons2nd,postSection) = createRefs()
+        val (bar, picture, stats, description, buttons, stories, buttons2nd, postSection) = createRefs()
         TopBar(modifier = Modifier.constrainAs(bar) {
             height = Dimension.fillToConstraints
             top.linkTo(parent.top, margin = 5.dp)
             bottom.linkTo(guu, margin = 5.dp)
-        }, { viewModel.onLogOutClick() },profileDetails)
+        }, { viewModel.onLogOutClick() }, profileDetails)
 
         Box(
             Modifier
@@ -202,7 +205,7 @@ fun ProfileContent(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
                     bottom.linkTo(guide3, margin = 5.dp)
                 }
         ) {
-            EditShareButtons (viewModel,openScreen)
+            EditShareButtons(viewModel, openScreen)
         }
 
         Row(
@@ -240,12 +243,11 @@ fun ProfileContent(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
                     end.linkTo(parent.end, margin = 5.dp)
                 }
         ) {
-            if(posts.isNotEmpty()){
-                Log.d("is not empty",posts.get(0).caption)
+            if (posts.isNotEmpty()) {
+                Log.d("is not empty", posts.get(0).caption)
                 PostsSection(posts)
-            }
-            else{
-                Log.d("is not empty","0")
+            } else {
+                Log.d("is not empty", "0")
             }
 
 
@@ -256,7 +258,7 @@ fun ProfileContent(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(modifier: Modifier = Modifier, onLogOutClick: () -> Unit,profileDetails:UserDetails) {
+fun TopBar(modifier: Modifier = Modifier, onLogOutClick: () -> Unit, profileDetails: UserDetails) {
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
@@ -297,11 +299,13 @@ fun TopBar(modifier: Modifier = Modifier, onLogOutClick: () -> Unit,profileDetai
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.2f)){
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.40f)
-                    .padding(10.dp),
+                    .fillMaxHeight(0.2f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.40f)
+                        .padding(10.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -432,7 +436,7 @@ fun ProfileDetails(profileDetails: UserDetails) {
 }
 
 @Composable
-fun EditShareButtons( viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
+fun EditShareButtons(viewModel: ProfileViewModel, openScreen: (String) -> Unit) {
     Row {
         RoundedButton(
             text = "Edit Profile",
@@ -497,11 +501,24 @@ fun PostsTagsButtons() {
 //            shape = RectangleShape,
 //            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
         ) {
-            Icon(
-                imageVector = Icons.Outlined.GridOn,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(0.7f)
-            )
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.GridOn,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize(0.7f)
+                )
+                Divider(
+                    color = Color.White,
+                    thickness = 2.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
         }
         Box(
             modifier = Modifier
@@ -521,14 +538,30 @@ fun PostsTagsButtons() {
     }
 
 }
+
 @Composable
-fun PostsSection(posts:MutableList<Post>){
+fun PostsSection(posts: MutableList<Post>) {
+    val screenWidth = LocalConfiguration.current.screenHeightDp.dp
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
-        contentPadding = PaddingValues(5.dp)
+//        contentPadding = PaddingValues(20.dp)
     ) {
         items(posts) { post ->
-            AsyncImage(model = post.media, contentDescription = null)
+            Box(
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .fillMaxWidth()
+                    .padding(5.dp)
+                    .background(Color.White),
+                contentAlignment = Alignment.Center
+            ){
+                AsyncImage(
+                    model = post.media,
+                    contentScale = ContentScale.Fit,
+                    contentDescription = null,
+                )
+            }
+
         }
     }
 }

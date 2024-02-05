@@ -7,19 +7,10 @@ import com.example.quick.navigation.NavRoutes
 import com.example.quick.screens.ErrorHandlingViewModel
 import com.example.quick.service.AccountService
 import com.example.quick.service.UserService
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ActivityRetainedScoped
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filter
-import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
-import javax.inject.Singleton
-import kotlin.coroutines.suspendCoroutine
 @HiltViewModel
 
 class ProfileViewModel @Inject constructor(
