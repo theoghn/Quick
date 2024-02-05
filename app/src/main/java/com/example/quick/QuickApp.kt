@@ -8,6 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -17,7 +18,9 @@ import com.example.quick.navigation.NavRoutes
 import com.example.quick.screens.auth.login.LogInScreen
 import com.example.quick.screens.auth.register.RegisterScreen
 import com.example.quick.screens.profile.Profile
+import com.example.quick.screens.profile.ProfileViewModel
 import com.example.quick.screens.setup.ProfileSetupScreen
+import com.example.quick.screens.setup.ProfileSetupViewModel
 import com.example.quick.screens.splash.SplashScreen
 
 @Composable
@@ -63,7 +66,8 @@ fun NavGraphBuilder.notesGraph(appState: AppState) {
         RegisterScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
     }
     composable(NavRoutes.Profile.route) {
-        Profile(openScreen = { route -> appState.navigate(route) })
+        val viewModel = hiltViewModel<ProfileViewModel>()
+        Profile(viewModel,openScreen = { route -> appState.navigate(route) })
     }
     composable(NavRoutes.ProfileSetup.route) {
         ProfileSetupScreen(openScreen = { route -> appState.navigate(route) })

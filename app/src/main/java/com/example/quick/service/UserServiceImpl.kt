@@ -4,7 +4,9 @@ import android.content.ContentValues.TAG
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
+import com.example.quick.models.Post
 import com.example.quick.models.UserDetails
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.dataObjects
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -30,9 +32,9 @@ class UserServiceImpl @Inject constructor(private val auth: AccountService) : Us
             .document(userId).get().await().toObject()
     }
 
-
+    // this is a bad implementation , I did it to get it done without using update method from firebase
     override suspend fun updateDetails(userDetails: UserDetails) {
-
+        // if user didn t choose a new image the link will be a firebase link, so no need to upload the image
         if (userDetails.picture.contains("https://firebasestorage.googleapis.com/v0/b/quick-de5b2.appspot.com/o/images",true) || userDetails.picture == ""){
             val details =
                 UserDetails(
@@ -63,8 +65,8 @@ class UserServiceImpl @Inject constructor(private val auth: AccountService) : Us
         val uploadTask = storageRef.putFile(file)
         uploadTask.addOnFailureListener {
             Log.d(
-                "UserFails",
-                "User Details failed to be written!"
+                "Image",
+                "Image upload failed"
             )
         }.addOnSuccessListener { taskSnapshot ->
             taskSnapshot.metadata!!.reference!!.downloadUrl.addOnSuccessListener { uri ->
@@ -90,11 +92,70 @@ class UserServiceImpl @Inject constructor(private val auth: AccountService) : Us
                         )
                     }
                     .addOnFailureListener { e -> Log.w("UserFail", "Error writing document", e) }
-
             }
         }
+    }
 
+    override suspend fun writePost(post: Post) {
+        // upload image
+        // if image uploaded,add post
+        //if post added correctly update the post count of the user
+        val file = post.media.toUri()
+        val storageRef = Firebase.storage.reference.child("images/${file.lastPathSegment}")
+        val uploadTask = storageRef.putFile(file)
+        var success = false
+        var imgUploadUrl = ""
+        uploadTask.addOnFailureListener {
+            Log.d(
+                "Image",
+                "Image upload failed"
+            )
+        }.addOnSuccessListener { taskSnapshot ->
+            taskSnapshot.metadata!!.reference!!.downloadUrl.addOnSuccessListener { uri ->
+                imgUploadUrl = uri.toString()
+                Log.d(
+                    "Image",
+                    "Image uploaded at $imgUploadUrl"
+                )
+                success = true
+                val data = hashMapOf(
+                    "caption" to post.caption,
+                    "likeCount" to 0L,
+                    "media" to imgUploadUrl,
+                    "userId" to post.userId
+                )
 
+                Firebase.firestore.collection("posts")
+                    .add(data)
+                    .addOnFailureListener { e ->
+                        Log.w(TAG, "Error adding document", e)
+                        success = false
+                    }
+                    .addOnSuccessListener {
+                        Log.d(TAG, "DocumentSnapshot written with ID: ${it.id}")
+                        val postRef = Firebase.firestore.collection("users").document(auth.currentUserId)
+                        postRef.update("posts", FieldValue.increment(1))
+                    }
+            }
+        }
+    }
+
+    override suspend fun getUserPosts(userId: String): MutableList<Post> {
+        val posts: MutableList<Post> = mutableListOf()
+        Firebase.firestore.collection("posts")
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    Log.d("Got Post","post")
+                    val p = document.toObject<Post>()
+                    posts.add(p)
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents: ", exception)
+            }
+        return posts
     }
 
 

@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,6 +16,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -59,6 +63,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.quick.models.Post
 import com.example.quick.models.UserDetails
 import kotlinx.coroutines.delay
 
@@ -82,23 +87,23 @@ fun CenteredText(
     )
 }
 @Composable
-fun Profile(viewModel: ProfileViewModel = hiltViewModel(),openScreen: (String) -> Unit) {
-    var isLoading by remember { mutableStateOf(true) }
+fun Profile(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
+//    var isLoading by remember { mutableStateOf(true) }
     val isInit by viewModel.initialized.collectAsState()
+    Log.d("Comp1",isInit.toString())
 
-    if (!isInit){
-        LaunchedEffect(Unit) {
-            viewModel.initialize()
-            delay(1000L)
-            isLoading = false
-        }
-
-    }
-    else {
-        isLoading = false
-    }
-
-    if(isLoading){
+//    if (!isInit){
+//        LaunchedEffect(Unit) {
+//            viewModel.initialize()
+//            delay(1000L)
+//            isLoading = false
+//        }
+//    }
+//    else {
+//        isLoading = false
+//    }
+    Log.d("Comp2",isInit.toString())
+    if(!isInit){
         Column(
             modifier =
             Modifier
@@ -113,6 +118,7 @@ fun Profile(viewModel: ProfileViewModel = hiltViewModel(),openScreen: (String) -
         }
     }
     else{
+
         ProfileContent(viewModel,openScreen)
     }
 }
@@ -121,6 +127,7 @@ fun Profile(viewModel: ProfileViewModel = hiltViewModel(),openScreen: (String) -
 fun ProfileContent(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
 //    LaunchedEffect(Unit) { viewModel.initialize() }
     val profileDetails by viewModel.userDetails.collectAsState()
+    val posts by viewModel.posts.collectAsState()
 
 
     ConstraintLayout(Modifier.fillMaxSize(1f)) {
@@ -133,7 +140,7 @@ fun ProfileContent(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
 
 
 
-        val (bar, picture, stats, description, buttons, stories, posts) = createRefs()
+        val (bar, picture, stats, description, buttons, stories, buttons2nd,postSection) = createRefs()
         TopBar(modifier = Modifier.constrainAs(bar) {
             height = Dimension.fillToConstraints
             top.linkTo(parent.top, margin = 5.dp)
@@ -211,7 +218,7 @@ fun ProfileContent(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
 
         Row(
             Modifier
-                .constrainAs(posts) {
+                .constrainAs(buttons2nd) {
                     height = Dimension.fillToConstraints
                     width = Dimension.fillToConstraints
                     top.linkTo(guide4, margin = 5.dp)
@@ -221,6 +228,27 @@ fun ProfileContent(viewModel: ProfileViewModel,openScreen: (String) -> Unit) {
                 }
         ) {
             PostsTagsButtons()
+        }
+        Box(
+            Modifier
+                .constrainAs(postSection) {
+                    height = Dimension.fillToConstraints
+                    width = Dimension.fillToConstraints
+                    top.linkTo(guide5, margin = 5.dp)
+                    bottom.linkTo(parent.bottom, margin = 5.dp)
+                    start.linkTo(parent.start, margin = 5.dp)
+                    end.linkTo(parent.end, margin = 5.dp)
+                }
+        ) {
+            if(posts.isNotEmpty()){
+                Log.d("is not empty",posts.get(0).caption)
+                PostsSection(posts)
+            }
+            else{
+                Log.d("is not empty","0")
+            }
+
+
         }
 
     }
@@ -266,7 +294,10 @@ fun TopBar(modifier: Modifier = Modifier, onLogOutClick: () -> Unit,profileDetai
                 isSheetOpen = false
             },
         ) {
-            Column(Modifier.fillMaxWidth().fillMaxHeight(0.2f)){
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.2f)){
                 Box(modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.40f)
@@ -489,6 +520,17 @@ fun PostsTagsButtons() {
         }
     }
 
+}
+@Composable
+fun PostsSection(posts:MutableList<Post>){
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        contentPadding = PaddingValues(5.dp)
+    ) {
+        items(posts) { post ->
+            AsyncImage(model = post.media, contentDescription = null)
+        }
+    }
 }
 
 //

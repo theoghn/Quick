@@ -24,9 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -43,7 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 
 @Composable
-fun Post() {
+fun UploadPost(viewModel: UploadPostViewModel = hiltViewModel()) {
 
 
     val lightBlue = Color(0xFF6495ED)
@@ -61,7 +59,7 @@ fun Post() {
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 TextButton(
-                    onClick = { },
+                    onClick = { viewModel.writePost()},
                     modifier = Modifier.padding(6.dp)
                 ) {
                     Text(text = "Share it", color = lightBlue, fontSize = 18.sp)
@@ -72,14 +70,14 @@ fun Post() {
         },
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
-            PhotoPicker()
+            PhotoPicker(viewModel)
         }
 
     }
 }
 
 @Composable
-fun PhotoPicker(viewModel: PostViewModel = hiltViewModel()) {
+fun PhotoPicker(viewModel: UploadPostViewModel) {
     val caption by viewModel.caption.collectAsState()
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current

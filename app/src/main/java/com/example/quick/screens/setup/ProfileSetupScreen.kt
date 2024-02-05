@@ -69,8 +69,7 @@ fun ProfileSetupScreen(
     val userDetails by profileViewModel.userDetails.collectAsState()
     var initialized by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        profileViewModel.initialize()
-
+//        profileViewModel.initialize()
         delay(500)
         setupViewModel.init(userDetails.followers,userDetails.following,userDetails.posts,userDetails.username,userDetails.description,userDetails.picture,userDetails.link)
         Log.d("OOOOOOOOOO",userDetails.picture)

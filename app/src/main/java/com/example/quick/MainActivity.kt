@@ -1,7 +1,6 @@
 package com.example.quick
 
 import android.util.Log
-
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Column
@@ -29,9 +28,10 @@ import com.example.quick.navigation.NavBarItems
 import com.example.quick.navigation.NavRoutes
 import com.example.quick.screens.Find
 import com.example.quick.screens.Home
-import com.example.quick.screens.post.Post
+import com.example.quick.screens.post.UploadPost
 import com.example.quick.screens.profile.Profile
 import com.example.quick.screens.ReelsPage
+import com.example.quick.screens.profile.ProfileViewModel
 
 @Composable
 fun MainActivity(
@@ -75,13 +75,14 @@ fun NavigationHost(navController: NavHostController,openScreen: (String) -> Unit
             Find()
         }
         composable(NavRoutes.Post.route) {
-            Post()
+            UploadPost()
         }
         composable(NavRoutes.Reels.route) {
             ReelsPage()
         }
         composable(NavRoutes.Profile.route) {
-            Profile(openScreen = openScreen)
+            val viewModel = hiltViewModel<ProfileViewModel>()
+            Profile(viewModel,openScreen)
         }
     }
 }

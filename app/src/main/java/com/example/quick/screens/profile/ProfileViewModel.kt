@@ -1,6 +1,7 @@
 package com.example.quick.screens.profile
 
 import android.util.Log
+import com.example.quick.models.Post
 import com.example.quick.models.UserDetails
 import com.example.quick.navigation.NavRoutes
 import com.example.quick.screens.ErrorHandlingViewModel
@@ -28,15 +29,17 @@ class ProfileViewModel @Inject constructor(
 
     val userDetails = MutableStateFlow(default_details)
     val initialized = MutableStateFlow(false)
+    val posts = MutableStateFlow(mutableListOf(Post()))
 
-    fun initialize() {
+    init{
         Log.d("Profile Access","accessed")
         launchErrorCatch {
+            posts.value = userService.getUserPosts(accountService.currentUserId)
             userDetails.value =
                 userService.readDetails(accountService.currentUserId) ?: default_details
+            delay(1000)
             initialized.value = true
         }
-
     }
 
     fun onLogOutClick() {
