@@ -92,21 +92,8 @@ fun CenteredText(
 
 @Composable
 fun Profile(viewModel: ProfileViewModel, openScreen: (String) -> Unit) {
-//    var isLoading by remember { mutableStateOf(true) }
     val isInit by viewModel.initialized.collectAsState()
-    Log.d("Comp1", isInit.toString())
 
-//    if (!isInit){
-//        LaunchedEffect(Unit) {
-//            viewModel.initialize()
-//            delay(1000L)
-//            isLoading = false
-//        }
-//    }
-//    else {
-//        isLoading = false
-//    }
-    Log.d("Comp2", isInit.toString())
     if (!isInit) {
         Column(
             modifier =
@@ -128,7 +115,6 @@ fun Profile(viewModel: ProfileViewModel, openScreen: (String) -> Unit) {
 
 @Composable
 fun ProfileContent(viewModel: ProfileViewModel, openScreen: (String) -> Unit) {
-//    LaunchedEffect(Unit) { viewModel.initialize() }
     val profileDetails by viewModel.userDetails.collectAsState()
     val posts by viewModel.posts.collectAsState()
 
@@ -243,14 +229,7 @@ fun ProfileContent(viewModel: ProfileViewModel, openScreen: (String) -> Unit) {
                     end.linkTo(parent.end, margin = 5.dp)
                 }
         ) {
-            if (posts.isNotEmpty()) {
-                Log.d("is not empty", posts.get(0).caption)
-                PostsSection(posts)
-            } else {
-                Log.d("is not empty", "0")
-            }
-
-
+            PostsSection(posts)
         }
 
     }
@@ -554,7 +533,7 @@ fun PostsSection(posts: MutableList<Post>) {
                     .padding(5.dp)
                     .background(Color.White),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 AsyncImage(
                     model = post.media,
                     contentScale = ContentScale.Fit,

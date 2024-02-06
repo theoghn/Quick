@@ -27,7 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.quick.navigation.NavBarItems
 import com.example.quick.navigation.NavRoutes
 import com.example.quick.screens.Find
-import com.example.quick.screens.Home
+import com.example.quick.screens.home.Home
 import com.example.quick.screens.post.UploadPost
 import com.example.quick.screens.profile.Profile
 import com.example.quick.screens.ReelsPage

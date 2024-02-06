@@ -15,8 +15,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.quick.navigation.NavRoutes
+import com.example.quick.screens.Reels
 import com.example.quick.screens.auth.login.LogInScreen
 import com.example.quick.screens.auth.register.RegisterScreen
+import com.example.quick.screens.home.Home
+import com.example.quick.screens.post.UploadPost
 import com.example.quick.screens.profile.Profile
 import com.example.quick.screens.profile.ProfileViewModel
 import com.example.quick.screens.setup.ProfileSetupScreen
@@ -71,6 +74,16 @@ fun NavGraphBuilder.notesGraph(appState: AppState) {
     }
     composable(NavRoutes.ProfileSetup.route) {
         ProfileSetupScreen(openScreen = { route -> appState.navigate(route) })
+    }
+    // feels like initializing the composable here too, decreases lag, don't really get why
+    composable(NavRoutes.Post.route) {
+        UploadPost()
+    }
+    composable(NavRoutes.Post.route) {
+        Reels()
+    }
+    composable(NavRoutes.Post.route) {
+        Home()
     }
 
 

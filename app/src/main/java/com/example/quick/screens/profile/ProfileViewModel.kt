@@ -28,7 +28,7 @@ class ProfileViewModel @Inject constructor(
             posts.value = userService.getUserPosts(accountService.currentUserId)
             userDetails.value =
                 userService.readDetails(accountService.currentUserId) ?: default_details
-            delay(1000)
+            delay(200)
             initialized.value = true
         }
     }

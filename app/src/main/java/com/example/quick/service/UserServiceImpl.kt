@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.core.net.toUri
 import com.example.quick.models.Post
 import com.example.quick.models.UserDetails
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.dataObjects
 import com.google.firebase.firestore.ktx.firestore
@@ -17,6 +18,7 @@ import javax.inject.Inject
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.ktx.storage
 import java.io.File
+import java.util.Date
 
 class UserServiceImpl @Inject constructor(private val auth: AccountService) : UserService {
     override val currentUserDetails: Flow<UserDetails> = callbackFlow {
@@ -35,7 +37,11 @@ class UserServiceImpl @Inject constructor(private val auth: AccountService) : Us
     // this is a bad implementation , I did it to get it done without using update method from firebase
     override suspend fun updateDetails(userDetails: UserDetails) {
         // if user didn t choose a new image the link will be a firebase link, so no need to upload the image
-        if (userDetails.picture.contains("https://firebasestorage.googleapis.com/v0/b/quick-de5b2.appspot.com/o/images",true) || userDetails.picture == ""){
+        if (userDetails.picture.contains(
+                "https://firebasestorage.googleapis.com/v0/b/quick-de5b2.appspot.com/o/images",
+                true
+            ) || userDetails.picture == ""
+        ) {
             val details =
                 UserDetails(
                     userDetails.userId,
@@ -122,7 +128,8 @@ class UserServiceImpl @Inject constructor(private val auth: AccountService) : Us
                     "caption" to post.caption,
                     "likeCount" to 0L,
                     "media" to imgUploadUrl,
-                    "userId" to post.userId
+                    "userId" to post.userId,
+                    "time" to Timestamp(Date())
                 )
 
                 Firebase.firestore.collection("posts")
@@ -133,7 +140,8 @@ class UserServiceImpl @Inject constructor(private val auth: AccountService) : Us
                     }
                     .addOnSuccessListener {
                         Log.d(TAG, "DocumentSnapshot written with ID: ${it.id}")
-                        val postRef = Firebase.firestore.collection("users").document(auth.currentUserId)
+                        val postRef =
+                            Firebase.firestore.collection("users").document(auth.currentUserId)
                         postRef.update("posts", FieldValue.increment(1))
                     }
             }
@@ -147,7 +155,34 @@ class UserServiceImpl @Inject constructor(private val auth: AccountService) : Us
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    Log.d("Got Post","post")
+                    Log.d("Got Post", "post")
+                    val p = document.toObject<Post>()
+                    posts.add(p)
+                }
+                posts.sortByDescending { it.time }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents: ", exception)
+            }
+        return posts
+    }
+
+    override suspend fun getPosts(
+        orderItem: String,
+        start: Long,
+        postsNumber: Long
+    ): MutableList<Post> {
+        TODO("i have to also get the users")
+
+        val posts: MutableList<Post> = mutableListOf()
+        Firebase.firestore.collection("posts")
+            .orderBy(orderItem)
+            .startAt(start)
+            .limit(postsNumber)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    Log.d("Got Post", "post")
                     val p = document.toObject<Post>()
                     posts.add(p)
                 }
