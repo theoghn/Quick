@@ -7,6 +7,7 @@ import androidx.core.net.toUri
 import com.example.quick.models.Post
 import com.example.quick.models.UserDetails
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.dataObjects
 import com.google.firebase.firestore.ktx.firestore
@@ -168,29 +169,47 @@ class UserServiceImpl @Inject constructor(private val auth: AccountService) : Us
     }
 
     override suspend fun getPosts(
-        orderItem: String,
-        start: Long,
+        start: String,
         postsNumber: Long
-    ): MutableList<Post> {
-        TODO("i have to also get the users")
-
+    ): Pair<MutableList<Post>, MutableList<UserDetails>> {
+        val db = Firebase.firestore
         val posts: MutableList<Post> = mutableListOf()
-        Firebase.firestore.collection("posts")
-            .orderBy(orderItem)
-            .startAt(start)
+        val usersDetails: MutableList<UserDetails> = mutableListOf()
+        //could not find a easy method to get a number of posts
+        db.collection("posts")
+            .orderBy("caption")
+            .startAfter(start)
             .limit(postsNumber)
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    Log.d("Got Post", "post")
                     val p = document.toObject<Post>()
                     posts.add(p)
                 }
+
+                if (posts.count()>0){
+                    val ids = posts.map { it.userId }
+                    db.collection("users")
+                        .whereIn(FieldPath.documentId(),ids)
+                        .get()
+                        .addOnSuccessListener { documents2 ->
+                            for (document in documents2) {
+                                val p = document.toObject<UserDetails>()
+                                usersDetails.add(p)
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.w(TAG, "Error getting user documents in getPost method: ", exception)
+                        }
+                }
+
             }
             .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents: ", exception)
+                Log.w(TAG, "Error getting post documents in getPost method: ", exception)
             }
-        return posts
+
+
+        return Pair(posts,usersDetails)
     }
 
 

@@ -1,6 +1,7 @@
 package com.example.quick.screens.home
 
 import android.content.res.Resources
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +20,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BookmarkBorder
@@ -27,6 +30,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,10 +50,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.quick.R
+import com.example.quick.models.UserDetails
+import com.example.quick.screens.profile.ProfileViewModel
 import com.example.quick.ui.theme.QuickTheme
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 
 @Composable
-fun Home() {
+fun Home(viewModel: HomeViewModel) {
+    val posts by viewModel.posts.collectAsState()
+    val users by viewModel.users.collectAsState()
+    val numberOfReq by viewModel.numberOfRequests.collectAsState()
+
     Scaffold(
         topBar = {
             Text(
@@ -59,27 +75,50 @@ fun Home() {
         },
         content = { padding ->
             val height = getScreenHeight() / 2
-            LazyColumn(modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()) {
-                items(4) { index ->
-                    PostCard(height, "CatTermiantor", "My post is incredible", index)
-                }
+            val listState = rememberLazyListState()
+            LaunchedEffect(listState) {
+                snapshotFlow { listState.firstVisibleItemIndex }
+                    .map { index -> index == numberOfReq.toInt()*4 -3 }
+                    .distinctUntilChanged()
+                    .filter { it }
+                    .collect {
+                        viewModel.getMorePosts()
+                    }
             }
-//            Box(
-//                Modifier
-//                    .padding(padding)
-//                    .height(height.dp)
-//            ) {
-//                PostCard(height, "CatTermiantor", "My post is incredible", 20)
-//
-//            }
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+            ) {
+                Log.d ("Home View", posts.count().toString())
+
+                items(posts) { post ->
+                    val user :UserDetails = users.first {it.userId == post.userId}
+                    if(user.userId != ""){
+                        PostCard(height, user.username, post.caption, post.likeCount, user.picture,post.media)
+                    }
+                    else{
+                        Log.d ("Home View", "user invalid")
+                    }
+                }
+
+            }
+
         }
     )
 }
 
 @Composable
-fun PostCard(height: Int, username: String, caption: String,likeNumber: Number) {
+fun PostCard(
+    height: Int,
+    username: String,
+    caption: String,
+    likeNumber: Number,
+    userPhoto: String,
+    mediaPhoto: String,
+
+) {
     val top = height * .1
     val photo = height * .7
     val bottom = height * .2
@@ -96,7 +135,7 @@ fun PostCard(height: Int, username: String, caption: String,likeNumber: Number) 
             verticalAlignment = Alignment.CenterVertically
         ) {
             Spacer(modifier = Modifier.width(8.dp))
-            CirclePhoto()
+            CirclePhoto(userPhoto)
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(username, fontWeight = FontWeight.Bold)
@@ -106,7 +145,7 @@ fun PostCard(height: Int, username: String, caption: String,likeNumber: Number) 
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(7.5f),
-            model = R.drawable.cat, contentDescription = null
+            model = mediaPhoto, contentDescription = null
         )
         Spacer(modifier = Modifier.height(8.dp))
         Box(
@@ -123,8 +162,8 @@ fun PostCard(height: Int, username: String, caption: String,likeNumber: Number) 
                 .padding(start = 5.dp, end = 5.dp)
                 .weight(2f)
 
-        ){
-            CaptionSection(likeNumber,caption,username)
+        ) {
+            CaptionSection(likeNumber, caption, username)
         }
 
     }
@@ -137,7 +176,7 @@ fun getScreenHeight(): Int {
 }
 
 @Composable
-fun CirclePhoto() {
+fun CirclePhoto(userPhoto: String) {
 
     Box(
         modifier = Modifier
@@ -148,8 +187,8 @@ fun CirclePhoto() {
             .fillMaxHeight(),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painterResource(id = R.drawable.cat),
+        AsyncImage(
+            model = userPhoto,
             contentDescription = null,
 
             )
@@ -159,7 +198,7 @@ fun CirclePhoto() {
 
 @Composable
 fun InteractionButtons() {
-    Row(verticalAlignment = Alignment.CenterVertically){
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = Icons.Outlined.FavoriteBorder,
             contentDescription = null,
@@ -186,7 +225,7 @@ fun InteractionButtons() {
         )
         Spacer(modifier = Modifier.weight(1f))
         Icon(
-            imageVector =  Icons.Outlined.BookmarkBorder,
+            imageVector = Icons.Outlined.BookmarkBorder,
             contentDescription = null,
             modifier = Modifier
                 .fillMaxHeight(1f)
@@ -198,8 +237,9 @@ fun InteractionButtons() {
     }
 
 }
+
 @Composable
-fun CaptionSection(likeNumber:Number,caption:String,username: String){
+fun CaptionSection(likeNumber: Number, caption: String, username: String) {
     val text = "$username $caption"
     val parts = text.split(" ")
     val annotatedString = buildAnnotatedString {
@@ -213,16 +253,20 @@ fun CaptionSection(likeNumber:Number,caption:String,username: String){
         }
     }
     Column {
-        Text(text = "${likeNumber.toString()} likes", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+        Text(
+            text = "${likeNumber.toString()} likes",
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 15.sp
+        )
         Text(text = annotatedString, fontSize = 15.sp)
 
     }
 }
 
-@Preview
-@Composable
-fun GreetingPreview() {
-    QuickTheme(useDarkTheme = true) {
-        Home()
-    }
-}
+//@Preview
+//@Composable
+//fun GreetingPreview() {
+//    QuickTheme(useDarkTheme = true) {
+//        Home()
+//    }
+//}

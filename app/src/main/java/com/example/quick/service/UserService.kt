@@ -10,5 +10,5 @@ interface UserService {
     suspend fun updateDetails(userDetails: UserDetails)
     suspend fun writePost(post: Post)
     suspend fun getUserPosts(userId: String): MutableList<Post>
-    suspend fun getPosts(orderItem: String, start: Long, postsNumber: Long): MutableList<Post>
+    suspend fun getPosts(start: String, postsNumber: Long): Pair<MutableList<Post>, MutableList<UserDetails>>
 }

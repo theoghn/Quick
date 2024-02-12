@@ -530,7 +530,7 @@ fun PostsSection(posts: MutableList<Post>) {
                 modifier = Modifier
                     .aspectRatio(1f)
                     .fillMaxWidth()
-                    .padding(5.dp)
+                    .padding(1.dp)
                     .background(Color.White),
                 contentAlignment = Alignment.Center
             ) {

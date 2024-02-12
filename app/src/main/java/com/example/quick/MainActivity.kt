@@ -31,6 +31,7 @@ import com.example.quick.screens.home.Home
 import com.example.quick.screens.post.UploadPost
 import com.example.quick.screens.profile.Profile
 import com.example.quick.screens.ReelsPage
+import com.example.quick.screens.home.HomeViewModel
 import com.example.quick.screens.profile.ProfileViewModel
 
 @Composable
@@ -62,6 +63,7 @@ fun MainScreen(openScreen: (String) -> Unit) {
 
 @Composable
 fun NavigationHost(navController: NavHostController,openScreen: (String) -> Unit) {
+    val homeViewModel = hiltViewModel<HomeViewModel>()
     NavHost(
         navController = navController,
         startDestination = NavRoutes.Profile.route,
@@ -69,7 +71,8 @@ fun NavigationHost(navController: NavHostController,openScreen: (String) -> Unit
         exitTransition = { ExitTransition.None }
     ) {
         composable(NavRoutes.Home.route) {
-            Home()
+
+            Home(homeViewModel)
         }
         composable(NavRoutes.Find.route) {
             Find()

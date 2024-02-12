@@ -19,6 +19,7 @@ import com.example.quick.screens.Reels
 import com.example.quick.screens.auth.login.LogInScreen
 import com.example.quick.screens.auth.register.RegisterScreen
 import com.example.quick.screens.home.Home
+import com.example.quick.screens.home.HomeViewModel
 import com.example.quick.screens.post.UploadPost
 import com.example.quick.screens.profile.Profile
 import com.example.quick.screens.profile.ProfileViewModel
@@ -83,7 +84,8 @@ fun NavGraphBuilder.notesGraph(appState: AppState) {
         Reels()
     }
     composable(NavRoutes.Post.route) {
-        Home()
+        val viewModel = hiltViewModel<HomeViewModel>()
+        Home(viewModel)
     }
 
 
