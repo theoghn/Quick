@@ -4,6 +4,7 @@ import android.content.ContentValues.TAG
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
+import com.example.quick.models.Like
 import com.example.quick.models.Post
 import com.example.quick.models.UserDetails
 import com.google.firebase.Timestamp
@@ -167,6 +168,26 @@ class UserServiceImpl @Inject constructor(private val auth: AccountService) : Us
             }
         return posts
     }
+    override suspend fun getLikes():MutableList<Like>{
+        val userLikes: MutableList<Like> = mutableListOf()
+        val db = Firebase.firestore
+        db.collection("likes")
+//            .whereEqualTo("userId",auth.currentUserId)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    Log.d("Got Post", "post")
+                    val d = document.toObject<Like>()
+                    userLikes.add(d)
+                }
+
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting like documents: ", exception)
+            }
+
+        return userLikes
+    }
 
     override suspend fun getPosts(
         start: String,
@@ -175,6 +196,7 @@ class UserServiceImpl @Inject constructor(private val auth: AccountService) : Us
         val db = Firebase.firestore
         val posts: MutableList<Post> = mutableListOf()
         val usersDetails: MutableList<UserDetails> = mutableListOf()
+
         //could not find a easy method to get a number of posts
         db.collection("posts")
             .orderBy("caption")
@@ -212,5 +234,37 @@ class UserServiceImpl @Inject constructor(private val auth: AccountService) : Us
         return Pair(posts,usersDetails)
     }
 
+    override suspend fun likePost(postId: String) {
+        val newLike =
+            Like(likeId = auth.currentUserId+"_"+postId, postId = postId, userId = auth.currentUserId)
+        Firebase.firestore.collection("likes")
+            .document(newLike.likeId)
+            .set(newLike)
+            .addOnSuccessListener {
+                val postRef = Firebase.firestore.collection("posts").document(postId)
+                postRef.update("likeCount", FieldValue.increment(1))
+                Log.d(
+                    "ServiceImplementation",
+                    "Like updated in db"
+                )
+            }
+            .addOnFailureListener { e -> Log.w("ServiceImplementation", "Error writing like document", e) }
+//        need to increase like number on post
+    }
+
+    override suspend fun unlikePost(postId: String) {
+        val id = auth.currentUserId+"_"+postId
+        Firebase.firestore.collection("likes")
+            .document(id)
+            .delete()
+            .addOnSuccessListener {
+                val postRef = Firebase.firestore.collection("posts").document(postId)
+                postRef.update("likeCount", FieldValue.increment(-1))
+                Log.d(TAG, "Like document successfully deleted!")
+            }
+            .addOnFailureListener { e -> Log.w(TAG, "Error deleting like document", e) }
+//        need to decrease like number on post
+
+    }
 
 }

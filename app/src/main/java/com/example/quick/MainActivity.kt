@@ -63,7 +63,7 @@ fun MainScreen(openScreen: (String) -> Unit) {
 
 @Composable
 fun NavigationHost(navController: NavHostController,openScreen: (String) -> Unit) {
-    val homeViewModel = hiltViewModel<HomeViewModel>()
+//    val homeViewModel = hiltViewModel<HomeViewModel>()
     NavHost(
         navController = navController,
         startDestination = NavRoutes.Profile.route,
@@ -72,7 +72,7 @@ fun NavigationHost(navController: NavHostController,openScreen: (String) -> Unit
     ) {
         composable(NavRoutes.Home.route) {
 
-            Home(homeViewModel)
+            Home()
         }
         composable(NavRoutes.Find.route) {
             Find()

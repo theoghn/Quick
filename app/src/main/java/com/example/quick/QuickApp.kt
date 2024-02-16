@@ -84,8 +84,8 @@ fun NavGraphBuilder.notesGraph(appState: AppState) {
         Reels()
     }
     composable(NavRoutes.Post.route) {
-        val viewModel = hiltViewModel<HomeViewModel>()
-        Home(viewModel)
+//        val viewModel = hiltViewModel<HomeViewModel>()
+        Home()
     }
 
 

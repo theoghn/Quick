@@ -1,8 +1,7 @@
 package com.example.quick.screens.home
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.example.quick.models.Like
 import com.example.quick.models.Post
 import com.example.quick.models.UserDetails
 import com.example.quick.screens.ErrorHandlingViewModel
@@ -23,6 +22,8 @@ class HomeViewModel @Inject constructor(
 
     val posts = MutableStateFlow(listOf<Post>())
     val users = MutableStateFlow(listOf<UserDetails>())
+    val currentUserLikes = MutableStateFlow(listOf<Like>())
+
     val numberOfRequests= MutableStateFlow(0L)
     private var lastId = MutableStateFlow("")
 
@@ -30,11 +31,14 @@ class HomeViewModel @Inject constructor(
         numberOfRequests.value += 1
 
         launchErrorCatch {
-//            result a pair of posts list and userdetails list
+//            result a pair of posts list and user details list
             val result = userService.getPosts(lastId.value,4L)
-            delay(1000)
+            val result2 = userService.getLikes()
+//            long delay to make sure the coroutines get completed, tried using jobs but i can t make it work
+            delay(2000)
             Log.d ("Result",result.first.count().toString())
             posts.update { it + result.first}
+            currentUserLikes.update { result2}
             users.value = result.second
         }
     }
@@ -55,6 +59,38 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun likePost(userId:String,postId:String,isLiked:Boolean){
+        val newLike = Like(userId+"_"+postId,postId,userId)
+
+        if(isLiked){
+            currentUserLikes.update { it+newLike }
+            posts.update { currentPosts ->
+                currentPosts.map { post ->
+                    if (post.postId == postId) {
+                        post.copy(likeCount = post.likeCount + 1) // Update likeCount
+                    } else {
+                        post // Keep other posts unchanged
+                    }
+                }
+            }
+            launchErrorCatch { userService.likePost(postId) }
+        }
+        else {
+            currentUserLikes.update { it.filter { item -> item.likeId != newLike.likeId } }
+            posts.update { currentPosts ->
+                currentPosts.map { post ->
+                    if (post.postId == postId) {
+                        post.copy(likeCount = post.likeCount - 1) // Update likeCount
+                    } else {
+                        post // Keep other posts unchanged
+                    }
+                }
+            }
+            launchErrorCatch { userService.unlikePost(postId) }
+
+        }
+
+    }
 
 
 
