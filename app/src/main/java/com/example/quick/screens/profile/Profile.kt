@@ -5,10 +5,12 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,11 +26,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AssignmentInd
 import androidx.compose.material.icons.outlined.Dehaze
 import androidx.compose.material.icons.outlined.GridOn
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -89,6 +95,7 @@ fun CenteredText(
         // Add any other common properties here
     )
 }
+@OptIn(ExperimentalMaterialApi::class)
 
 @Composable
 fun Profile(viewModel: ProfileViewModel, openScreen: (String) -> Unit) {
@@ -108,8 +115,17 @@ fun Profile(viewModel: ProfileViewModel, openScreen: (String) -> Unit) {
             CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
         }
     } else {
+        val refreshing by viewModel.isRefreshing.collectAsState()
 
-        ProfileContent(viewModel, openScreen)
+        val pullRefreshState = rememberPullRefreshState(refreshing, { viewModel.refreshPosts() })
+        Box(
+            Modifier
+                .pullRefresh(pullRefreshState)
+
+        ){
+            ProfileContent(viewModel, openScreen)
+            PullRefreshIndicator(refreshing, pullRefreshState,Modifier.align(Alignment.TopCenter))
+        }
     }
 }
 
@@ -119,14 +135,14 @@ fun ProfileContent(viewModel: ProfileViewModel, openScreen: (String) -> Unit) {
     val posts by viewModel.posts.collectAsState()
 
 
-    ConstraintLayout(Modifier.fillMaxSize(1f)) {
+
+    ConstraintLayout(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         val guu = createGuidelineFromTop(fraction = 0.05f)
         val guide = createGuidelineFromTop(fraction = 0.20f)
         val guide2 = createGuidelineFromTop(fraction = 0.35f)
         val guide3 = createGuidelineFromTop(fraction = 0.40f)
         val guide4 = createGuidelineFromTop(fraction = 0.55f)
         val guide5 = createGuidelineFromTop(fraction = 0.63f)
-
 
 
         val (bar, picture, stats, description, buttons, stories, buttons2nd, postSection) = createRefs()

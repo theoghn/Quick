@@ -51,6 +51,8 @@ import coil.compose.AsyncImage
 import com.example.quick.screens.profile.ProfileViewModel
 import kotlinx.coroutines.delay
 
+// Review: should have initialized everything in the init block of the profile setupviewmodel probably
+
 // Don t know how to have the same instance of the ProfileViewModel
 @Composable
 fun ProfileSetupScreen(

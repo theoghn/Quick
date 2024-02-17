@@ -17,6 +17,8 @@ class UploadPostViewModel @Inject constructor(
 ) : ErrorHandlingViewModel() {
     val caption  = MutableStateFlow("")
     val image  = MutableStateFlow("")
+    val status = MutableStateFlow("")
+    val clicked = MutableStateFlow(false)
 
     fun updateCaption(newCaption: String) {
         caption.value = newCaption
@@ -33,8 +35,16 @@ class UploadPostViewModel @Inject constructor(
             launchErrorCatch {
                 userService.writePost(post)
             }
-        }
+            status.value = "Post uploaded successfully"
+            caption.value = ""
+            image.value = ""
 
+        }
+        else
+        {
+            status.value = "Post failed to upload"
+        }
+        clicked.value = !clicked.value
     }
 
 

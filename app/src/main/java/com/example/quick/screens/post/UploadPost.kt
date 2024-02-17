@@ -1,5 +1,6 @@
 package com.example.quick.screens.post
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,6 +34,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -42,7 +45,15 @@ import coil.compose.AsyncImage
 
 @Composable
 fun UploadPost(viewModel: UploadPostViewModel = hiltViewModel()) {
-
+    val status by viewModel.status.collectAsState()
+//  to show the toast for each click but after the status is updated
+    val clicked by viewModel.clicked.collectAsState()
+    val context = LocalContext.current
+    LaunchedEffect(clicked) {
+        if(status !=""){
+            Toast.makeText(context, status, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     val lightBlue = Color(0xFF6495ED)
     Scaffold(

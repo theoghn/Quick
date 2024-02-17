@@ -21,6 +21,7 @@ class ProfileViewModel @Inject constructor(
     val userDetails = MutableStateFlow(default_details)
     val initialized = MutableStateFlow(false)
     val posts = MutableStateFlow(mutableListOf(Post()))
+    val isRefreshing  =  MutableStateFlow(false)
 
     init{
         Log.d("Profile Access","accessed")
@@ -42,6 +43,17 @@ class ProfileViewModel @Inject constructor(
 
     fun onEditProfileClick(openScreen: (String) -> Unit) {
         openScreen(NavRoutes.ProfileSetup.route)
+    }
+
+    fun refreshPosts(){
+        launchErrorCatch {
+            isRefreshing.value = true
+            posts.value = userService.getUserPosts(accountService.currentUserId)
+            userDetails.value =
+                userService.readDetails(accountService.currentUserId) ?: userDetails.value
+            delay(400)
+            isRefreshing.value = false
+        }
     }
 
     companion object {
