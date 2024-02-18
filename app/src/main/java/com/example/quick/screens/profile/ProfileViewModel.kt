@@ -20,7 +20,7 @@ class ProfileViewModel @Inject constructor(
 
     val userDetails = MutableStateFlow(default_details)
     val initialized = MutableStateFlow(false)
-    val posts = MutableStateFlow(mutableListOf(Post()))
+    val posts = MutableStateFlow(listOf(Post()))
     val isRefreshing  =  MutableStateFlow(false)
 
     init{

@@ -535,7 +535,7 @@ fun PostsTagsButtons() {
 }
 
 @Composable
-fun PostsSection(posts: MutableList<Post>) {
+fun PostsSection(posts: List<Post>) {
     val screenWidth = LocalConfiguration.current.screenHeightDp.dp
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
